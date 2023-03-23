@@ -15,7 +15,7 @@
 ================================================================== */
 
 html {
-  font-family: 'MetropolitanoRegular';
+  font-family: Helvetica, Arial, sans-serif;
   font-size: var(--normal);
   color: var(--text-color);
 }

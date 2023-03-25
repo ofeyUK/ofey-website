@@ -1,0 +1,924 @@
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=canonical  href="https://ofey.uk/posts/highlight-julia/"/> <meta name=author  content=mrtn > <meta name=description  content="A greatly improved syntax highlighter for the Julia programming language in highlight.js."> <link rel=stylesheet  href="/css/gruvbox-dark.css"> <meta name=theme-color  content="#ffffff" /> <link rel=stylesheet  href="/css/hello-hermit.css"> <title>Improved syntax highlighting for Julia on the web | ofey</title> <body class=""> <div class=container > <header class=header > <span class=header__inner > <a href="/" style="text-decoration: none;"> <div class=logo > <span class=logo__mark > $ </span> <span class=logo__text > cd /home/ofey </span> <span class=logo__cursor  style=" "></span> </div> </a> <span class=header__right > <nav class=menu > <ul class=menu__inner > <li><a href="/posts/">posts</a> <li><a href="/about/">about</a> </ul> </nav> <span class="menu-trigger hidden"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <path d="M0 0h24v24H0z" fill=none ></path> <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path> </svg> </span> <span class="theme-toggle unselectable"> <svg class=theme-toggler  width=24  height=24  viewBox="0 0 48 48" fill=none  xmlns="http://www.w3.org/2000/svg"> <path d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22 3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"></path> </svg> </span> </span> </span> </header> <div class=content > <main class=post > <div class=post-info > <p style="display: flex; justify-content: space-between"> <span> <svg xmlns="http://www.w3.org/2000/svg" width=24  height=24  viewBox="0 0 24 24" fill=none  stroke=currentColor  stroke-width=2  stroke-linecap=round  stroke-linejoin=round ><circle cx=12  cy=12  r=10 ></circle><polyline points="12 6 12 12 16 14"></polyline></svg> 11 minutes </span> <span> <svg xmlns="http://www.w3.org/2000/svg" width=24  height=24  viewBox="0 0 24 24" fill=none  stroke=currentColor  stroke-width=2  stroke-linecap=round  stroke-linejoin=round ><rect x=3  y=4  width=18  height=18  rx=2  ry=2 ></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> 2020-10-27 </span> </p> <p> <svg xmlns="http://www.w3.org/2000/svg" width=24  height=24  viewBox="0 0 24 24" fill=none  stroke=currentColor  stroke-width=2  stroke-linecap=round  stroke-linejoin=round ><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg> <span class=tag ><a href="/tag/highlight.js">highlight.js</a></span><span class=tag ><a href="/tag/javascript">javascript</a></span><span class=tag ><a href="/tag/julia">julia</a></span><span class=tag ><a href="/tag/open-source">open-source</a></span> </p> </div> <article> <div class=post-content > <div class=franklin-content > <h1><a href="/posts/highlight-julia/">Improved syntax highlighting for Julia on the web</a></h1> <p>In the process of writing another post I looked into how to properly syntax highlight Julia code on a website like this. The static site generator <a href="https://franklinjl.org/">Franklin.jl</a>, used for this website, enables syntax highlighting using the JavaScript library <a href="https://highlightjs.org/">highlight.js</a>. However, I wasn&#39;t quite happy with the result so I decided to spend the weekend trying to improve it<sup>not a conscious decision, I spent way too much time on this...</sup>. Highlight.js is also used by many other tools, for example: <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a>, the documentation generator used by Julia and a majority of the package ecosystem; <a href="https://www.discourse.org/">Discourse</a>, the platform hosting Julia&#39;s <a href="https://discourse.julialang.org/">discussion forum</a>; and <a href="https://stackoverflow.com/questions/tagged/julia">StackOverflow</a>. My hope is that the improvements presented in this post will eventually reach those platforms, among others, and benefit readers of Julia code everywhere.</p> <p>I am not sure this post is of general interest – it merely presents the changes that I made – but, since I had almost all content written already for debugging my poor JavaScript coding, I decided to do some finishing touches and publish it. In hindsight it was probably a good idea since I found numerous corner cases that wasn&#39;t handled correctly.</p> <h2 id=tldr_highlightjs ><a href="#tldr_highlightjs" class=header-anchor >TL;DR: highlight.js</a></h2> <p>Before continuing I think it is good to have a basic overview of what highlight.js does. At the core highlight.js is a &quot;labeler&quot; which, given a snippet of code, tries to label all the words/operators/symbols/etc with an appropriate tag. The tags are language agnostic categories such as <code>keyword</code>, <code>number</code>, <code>string</code>, <code>literal</code>, etc. The full list, and their intended usage can be seen <a href="https://highlightjs.readthedocs.io/en/latest/css-classes-reference.html">here</a>. The labeling is done using regular expressions, with the help of some language specific rules and lists of keywords. Given that it is not a full fledged parser it can be tricky to correctly label everything.</p> <p>When everything has been labeled it is just a matter of selecting a color scheme that assigns color and/or text style to each tag. There are a bunch of styles available on the <a href="https://highlightjs.org/static/demo/">demo page</a>. For this post I use a modified version of the <code>Gruvbox Dark</code> theme. Since the number of tags is limited it is also very easy to create your own theme, or, as I did for this post, modify an existing one.</p> <p><em>The focus for the rest of the post is on the tagging itself and not the specific styling.</em> Consider using your browsers developer tools to inspect the code snippets to better understand which patterns in the code are being tagged, and with which tag the are labeled with.</p> <h2 id=status_quo ><a href="#status_quo" class=header-anchor >Status Quo</a></h2> <p>Lets look at an example comparing Julia with C using the current release of highlight.js &#40;version 10.3.1&#41;:</p> <pre><code class=language-julia-old >function main&#40;who::Union&#123;String,Nothing&#125; &#61; nothing&#41;
+    if who &#61;&#61;&#61; nothing
+        who &#61; &quot;world&quot;
+    end
+    print&#40;stdout, &quot;hello, &#36;&#40;who&#41;&#33;\n&quot;&#41;
+    return nothing
+end</code></pre> <pre><code class=language-c >#include &lt;stdio.h&gt;
+int main&#40;int argc, char *argv&#91;&#93;&#41; &#123;
+    char *who &#61; &quot;world&quot;;
+    if &#40;argc &gt; 1&#41; &#123;
+        who &#61; argv&#91;1&#93;;
+    &#125;
+    fprintf&#40;stdout, &quot;hello, &#37;s&#33;\n&quot;, who&#41;;
+    return 0;
+&#125;</code></pre> <p>Overall the Julia output is quite good for this example: keywords such as <code>function</code>, <code>if</code>, <code>return</code> and <code>end</code> are tagged as keywords; strings are recognized as <code>string</code>s; <code>nothing</code> is tagged as <code>literal</code>; and string interpolation is tagged as <code>subst</code>. However, when looking into the details, and in particular when comparing to the C example, it is evident that the syntax highlighter for Julia is not as sophisticated as the one for C. In particular, the C highlighter recognized <code>int main&#40;int argc, char *argv&#91;&#93;&#41;</code> as a function definition &#40;tagged as <code>function</code>&#41; with <code>main</code> tagged as <code>title</code> and <code>argc</code>, <code>*argv&#91;&#93;</code> tagged as <code>params</code> – surely the same can be achieved for Julia too&#33;</p> <p>You might also note that <code>Nothing</code> and <code>stdout</code> was not recognized in the Julia example. This turned out to be because the internal lists of keyword and constants had not been updated in some time. Updating these was purely a mechanical task and the patch is in fact already <a href="https://github.com/highlightjs/highlight.js/pull/2781">merged upstream</a>.</p> <h2 id=improvements_to_the_julia_syntax_highlighter ><a href="#improvements_to_the_julia_syntax_highlighter" class=header-anchor >Improvements to the Julia syntax highlighter</a></h2> <p>Enough talking – on to the fun stuff&#33; The sections below simply demonstrates all the changes that I made, with some comments. Every code snippet can be toggled in their upper right corner to compare with the &quot;old&quot; highlighting. Once again I encourage you to inspect the snippets using the browser developer tools, it can be quite informative&#33;</p> <h3 id=infix_operators_and_assignment ><a href="#infix_operators_and_assignment" class=header-anchor >Infix operators and assignment</a></h3> <p>Infix operators and assignment are now tagged. Assignment and the short-circuiting control-flow operators <code>&amp;&amp;</code> and <code>||</code> are tagged as <code>keyword</code>:</p> <div class=toggle-code-wrap  style="position:relative"> <input id=unique-id-23  type=checkbox  checked=true"> <label for=unique-id-23  class=switch > <span class="slider round"></span> </label> <div class=toggle-code-new > </p> <pre><code class=language-julia >x &#61; y &amp;&amp; &#40;z || q&#41;</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >x &#61; y &amp;&amp; &#40;z || q&#41;</code></pre>
+<p>
+</div>
+</div>
+
+<p>Initially I had all operators tagged as <code>keyword</code>, since this is what many other highlighters do, but I settled on tagging them as <code>built_in</code>:</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-24  type=checkbox  checked=true">
+<label for=unique-id-24  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >x &#43; y    x - y    x * y    x ≤ y    x ∈ y    x ⊗ y
+x &#61;&#61; y   x &lt;&#61; y   x &gt;&#61; y   x &#33;&#61; y   x &#61;&#61;&#61; y  x &#33;&#61;&#61; y</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >x &#43; y    x - y    x * y    x ≤ y    x ∈ y    x ⊗ y
+x &#61;&#61; y   x &lt;&#61; y   x &gt;&#61; y   x &#33;&#61; y   x &#61;&#61;&#61; y  x &#33;&#61;&#61; y</code></pre>
+<p>
+</div>
+</div>
+
+<p>Tagging assignment and operators differently has the extra benefit of making it clear that <em>update-and-assign</em> operators really are two things:</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-25  type=checkbox  checked=true">
+<label for=unique-id-25  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >x &#43;&#61; y    x -&#61; y    x *&#61; y    x //&#61; y    x /&#61; y
+x \&#61; y    x ^&#61; y    x ÷&#61; y    x &#37;&#61; y     x &lt;&lt;&#61; y
+x &gt;&gt;&gt;&#61; y  x &gt;&gt;&#61; y   x &amp;&#61; y    x ⊻&#61; y</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >x &#43;&#61; y    x -&#61; y    x *&#61; y    x //&#61; y    x /&#61; y
+x \&#61; y    x ^&#61; y    x ÷&#61; y    x &#37;&#61; y     x &lt;&lt;&#61; y
+x &gt;&gt;&gt;&#61; y  x &gt;&gt;&#61; y   x &amp;&#61; y    x ⊻&#61; y</code></pre>
+<p>
+</div>
+</div>
+
+<h3 id=contextual_highlighting_of_types ><a href="#contextual_highlighting_of_types" class=header-anchor >Contextual highlighting of types</a></h3>
+<p>Highlight.js has a predefined list of types associated with the <code>julia</code> language. This include, for example, <code>String</code>, <code>Int</code>, <code>Vector</code> and <code>Union</code>. When these words are encountered they are tagged with the <code>type</code> tag &#40;previously mislabeled with the <code>built_in</code> tag&#41;. In Julia, however, user-defined types are first class citizens, and usually there is no point in distinguishing them from the built-in types. Obviously the highlighter can not be taught to recognize all types out there, but in Julia there are certain context in which the content must be types. By teaching the highlighter about these contexts it is possible to unconditionally tag it with the <code>type</code> tag.</p>
+<p>Here are some examples of such contexts. Note, in particular, that the user-defined type <code>UserType</code> is correctly tagged.</p>
+<p>Any word directly attached to <code>&#123;...&#125;</code>:</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-26  type=checkbox  checked=true">
+<label for=unique-id-26  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >x &#61; Vector&#123;Int&#125;
+x &#61; UserType&#123;Int&#125;</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >x &#61; Vector&#123;Int&#125;
+x &#61; UserType&#123;Int&#125;</code></pre>
+<p>
+</div>
+</div>
+
+<p>Right hand side of <code>::</code></p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-27  type=checkbox  checked=true">
+<label for=unique-id-27  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >x::Int
+x::UserType
+x::Union&#123;String, Nothing&#125;
+x::AbstractArray&#123;UserType, 3&#125;
+x::AbstractArray&#123;UserType&#123;T&#125;, 3&#125;</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >x::Int
+x::UserType
+x::Union&#123;String, Nothing&#125;
+x::AbstractArray&#123;UserType, 3&#125;
+x::AbstractArray&#123;UserType&#123;T&#125;, 3&#125;</code></pre>
+<p>
+</div>
+</div>
+
+<p>Right and left hand side of <code>&lt;:</code> and <code>&gt;:</code></p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-28  type=checkbox  checked=true">
+<label for=unique-id-28  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >Int &lt;: String
+Int &lt;: UserType
+UserType &lt;: String
+
+Int &gt;: String
+Int &gt;: UserType
+UserType &gt;: String</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >Int &lt;: String
+Int &lt;: UserType
+UserType &lt;: String
+
+Int &gt;: String
+Int &gt;: UserType
+UserType &gt;: String</code></pre>
+<p>
+</div>
+</div>
+
+<p>After <code>where</code>:</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-29  type=checkbox  checked=true">
+<label for=unique-id-29  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >Vector&#123;Int&#125; where Int
+Vector&#123;UserType&#125; where UserType</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >Vector&#123;Int&#125; where Int
+Vector&#123;UserType&#125; where UserType</code></pre>
+<p>
+</div>
+</div>
+
+<p>Fortunately the contexts above should cover the vast majority of cases – while types sometimes show up in other contexts it is not very common. The list of built-ins keyword is still useful in other contexts, for example in</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-30  type=checkbox  checked=true">
+<label for=unique-id-30  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >x &#61; UserType
+x &#61; UserType&#123;T&#125;
+x &#61; Vector
+x &#61; Vector&#123;T&#125;</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >x &#61; UserType
+x &#61; UserType&#123;T&#125;
+x &#61; Vector
+x &#61; Vector&#123;T&#125;</code></pre>
+<p>
+</div>
+</div>
+
+<p>it is difficult to tell if the lonely <code>UserType</code> is a type or a regular variable, but <code>Vector</code> is still tagged. However, using a pre-defined list is not always correct either, since Julia allows for things like this:</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-31  type=checkbox  checked=true">
+<label for=unique-id-31  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >Vector &#61; 123</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >Vector &#61; 123</code></pre>
+<p>
+</div>
+</div>
+
+<p>where <code>Vector</code> is wrongly tagged. Perhaps contextual highlighting has sufficiently good coverage that the pre-defined list should be ignored completely?</p>
+<h3 id=type_definitions ><a href="#type_definitions" class=header-anchor >Type definitions</a></h3>
+<p>Type names are tagged as <code>class</code>, here are some examples:</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-32  type=checkbox  checked=true">
+<label for=unique-id-32  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >struct Struct
+    x::Int
+    y::Union&#123;String,UserType&#125;
+end
+
+struct Struct &lt;: AbstractStruct
+    x::Int
+    y::UserType
+end
+
+struct Struct&#123;T&#125; &lt;: AbstractStruct&#123;T&#125;
+    x::Int
+    y::Union&#123;String,UserType&#125;
+end
+
+mutable struct MutableStruct
+    x::UserType
+end
+
+mutable struct MutableStruct&#123;T&#125; &lt;: AbstractVector&#123;T&#125;
+    x::String
+end
+
+abstract type AbstractType end
+abstract type A&#123;T&#125; &lt;: AbstractVector&#123;T&#125; end
+abstract type AbstractType &lt;: Integer end
+
+primitive type PrimitiveType 32 end
+primitive type PrimitiveType &lt;: Integer 8 end</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >struct Struct
+    x::Int
+    y::Union&#123;String,UserType&#125;
+end
+
+struct Struct &lt;: AbstractStruct
+    x::Int
+    y::UserType
+end
+
+struct Struct&#123;T&#125; &lt;: AbstractStruct&#123;T&#125;
+    x::Int
+    y::Union&#123;String,UserType&#125;
+end
+
+mutable struct MutableStruct
+    x::UserType
+end
+
+mutable struct MutableStruct&#123;T&#125; &lt;: AbstractVector&#123;T&#125;
+    x::String
+end
+
+abstract type AbstractType end
+abstract type A&#123;T&#125; &lt;: AbstractVector&#123;T&#125; end
+abstract type AbstractType &lt;: Integer end
+
+primitive type PrimitiveType 32 end
+primitive type PrimitiveType &lt;: Integer 8 end</code></pre>
+<p>
+</div>
+</div>
+
+<p>Note that the contextual highlighting of types does a great job here – it correctly found all the types&#33;</p>
+<h3 id=function_definitions ><a href="#function_definitions" class=header-anchor >Function definitions</a></h3>
+<p>Function names in function definitions are tagged as <code>title</code>, and the function parameters are tagged as <code>params</code>:</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-33  type=checkbox  checked=true">
+<label for=unique-id-33  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >function sayhi&#40;who::String &#61; &quot;world&quot;&#41;
+    println&#40;&quot;hello, &quot; who&#41;
+end
+
+function sayhi&#40;who::T&#41; where T &lt;: AbstractString
+    println&#40;&quot;hello, &quot; who&#41;
+end
+
+function Base.print&#40;who::T&#41; where T
+    println&#40;&quot;hello, &quot; who&#41;
+end
+
+saybye&#40;who::String &#61; &quot;world&quot;&#41; &#61; println&#40;&quot;goodbye, &quot;, who&#41;
+saybye&#40;who::T&#41; where T &lt;: AbstractString &#61; println&#40;&quot;goodbye, &quot;, who&#41;
+Base.print&#40;who::T&#41; where T &#61; println&#40;&quot;goodbye, &quot;, who&#41;</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >function sayhi&#40;who::String &#61; &quot;world&quot;&#41;
+    println&#40;&quot;hello, &quot; who&#41;
+end
+
+function sayhi&#40;who::T&#41; where T &lt;: AbstractString
+    println&#40;&quot;hello, &quot; who&#41;
+end
+
+function Base.print&#40;who::T&#41; where T
+    println&#40;&quot;hello, &quot; who&#41;
+end
+
+saybye&#40;who::String &#61; &quot;world&quot;&#41; &#61; println&#40;&quot;goodbye, &quot;, who&#41;
+saybye&#40;who::T&#41; where T &lt;: AbstractString &#61; println&#40;&quot;goodbye, &quot;, who&#41;
+Base.print&#40;who::T&#41; where T &#61; println&#40;&quot;goodbye, &quot;, who&#41;</code></pre>
+<p>
+</div>
+</div>
+
+<p>Typed constructors are also tagged as function definitions</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-34  type=checkbox  checked=true">
+<label for=unique-id-34  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >struct MyStruct&#123;T&#125;
+    x::T
+    function MyStruct&#40;x::T&#41; where T
+        return new&#123;T&#125;&#40;x&#41;
+    end
+    function MyStruct&#123;T&#125;&#40;x&#41; where T
+        return new&#40;x&#41;
+    end
+end</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >struct MyStruct&#123;T&#125;
+    x::T
+    function MyStruct&#40;x::T&#41; where T
+        return new&#123;T&#125;&#40;x&#41;
+    end
+    function MyStruct&#123;T&#125;&#40;x&#41; where T
+        return new&#40;x&#41;
+    end
+end</code></pre>
+<p>
+</div>
+</div>
+
+<h3 id=function_calls ><a href="#function_calls" class=header-anchor >Function calls</a></h3>
+<p>The name of functions that are called is tagged with <code>built_in</code>. Technically not all functions are &quot;built-in&quot;s, of course, but I like that they are tagged regardless of who happened to define them; the core language, a package or me. It also finds function calls when broadcasting. Example:</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-35  type=checkbox  checked=true">
+<label for=unique-id-35  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >sayhi&#40;&quot;world&quot;&#41;
+sayhi.&#40;&#91;&quot;world&quot;, &quot;mom&quot;&#93;&#41;</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >sayhi&#40;&quot;world&quot;&#41;
+sayhi.&#40;&#91;&quot;world&quot;, &quot;mom&quot;&#93;&#41;</code></pre>
+<p>
+</div>
+</div>
+
+<h3 id=miscellaneous ><a href="#miscellaneous" class=header-anchor >Miscellaneous</a></h3>
+<p>Here is a list of miscellaneous minor changes and bugfixes that I found while working on the rest.</p>
+<p>Literal regular expressions, <code>r&quot;...&quot;</code> and <code>r&quot;&quot;&quot;...&quot;&quot;&quot;</code> are now tagged as <code>regexp</code> instead of <code>string</code>:</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-36  type=checkbox  checked=true">
+<label for=unique-id-36  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >r &#61; r&quot;single line regex&quot;
+r &#61; r&quot;&quot;&quot;
+multiline
+regex
+&quot;&quot;&quot;</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >r &#61; r&quot;single line regex&quot;
+r &#61; r&quot;&quot;&quot;
+multiline
+regex
+&quot;&quot;&quot;</code></pre>
+<p>
+</div>
+</div>
+
+<p>Multiline <code>Cmd</code> literals <code>&#96;&#96;&#96; ... &#96;&#96;&#96;</code> are detected as a single block instead of three separate literals &#40;no visual effect, but appreciate the fix&#33;&#41;:</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-37  type=checkbox  checked=true">
+<label for=unique-id-37  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >cmd &#61; &#96;&#96;&#96;
+julia --startup-file&#61;no
+      -e &#39;println&#40;&quot;hello, world&quot;&#41;&#39;
+&#96;&#96;&#96;</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >cmd &#61; &#96;&#96;&#96;
+julia --startup-file&#61;no
+      -e &#39;println&#40;&quot;hello, world&quot;&#41;&#39;
+&#96;&#96;&#96;</code></pre>
+<p>
+</div>
+</div>
+
+<p>Symbols are tagged as <code>symbol</code> &#40;this one was tricky since the same pattern is also used for literal ranges&#41;:</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-38  type=checkbox  checked=true">
+<label for=unique-id-38  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >x &#61; :symbol
+x &#61; f&#40;:symbol&#41;
+x &#61; 1:notsymbol
+x &#61; x:notsymbol
+x &#61; x:notsymbol&#40;y&#41;
+
+# :&#40; technically valid Julia, but never seen such strange things
+x &#61; &quot;hello&quot; :symbol
+x &#61; Z&#123;T&#125; :symbol</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >x &#61; :symbol
+x &#61; f&#40;:symbol&#41;
+x &#61; 1:notsymbol
+x &#61; x:notsymbol
+x &#61; x:notsymbol&#40;y&#41;
+
+# :&#40; technically valid Julia, but never seen such strange things
+x &#61; &quot;hello&quot; :symbol
+x &#61; Z&#123;T&#125; :symbol</code></pre>
+<p>
+</div>
+</div>
+
+<p>Some literal characters that were not recognized as such are now tagged as <code>string</code>:</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-39  type=checkbox  checked=true">
+<label for=unique-id-39  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >x &#61; &#39;\r&#39;
+x &#61; &#39;\n&#39;
+x &#61; &#39;\&#36;&#39;
+x &#61; &#39;\\&#39;
+x &#61; &#39;a&#39; # reference</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >x &#61; &#39;\r&#39;
+x &#61; &#39;\n&#39;
+x &#61; &#39;\&#36;&#39;
+x &#61; &#39;\\&#39;
+x &#61; &#39;a&#39; # reference</code></pre>
+<p>
+</div>
+</div>
+
+<p><code>&#33;</code> is now allowed in variable names, and thus also recognized in the context of finding function definitions and function calls:</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-40  type=checkbox  checked=true">
+<label for=unique-id-40  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >f&#33;&#40;x&#41; &#61; x
+f&#33;&#40;x&#41;</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >f&#33;&#40;x&#41; &#61; x
+f&#33;&#40;x&#41;</code></pre>
+<p>
+</div>
+</div>
+
+<p>When <code>&#33;</code> is used in other contexts, it is tagged as an operator &#40;<code>built_in</code>&#41;:</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-41  type=checkbox  checked=true">
+<label for=unique-id-41  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >if &#33;x
+    # ...
+end</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >if &#33;x
+    # ...
+end</code></pre>
+<p>
+</div>
+</div>
+
+<p><code>?</code> and <code>:</code> are also tagged as operators &#40;<code>built_in</code>&#41;:</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-42  type=checkbox  checked=true">
+<label for=unique-id-42  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >x ? &quot;hello&quot; : &quot;world&quot;</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >x ? &quot;hello&quot; : &quot;world&quot;</code></pre>
+<p>
+</div>
+</div>
+
+<h3 id=repl_highlighting ><a href="#repl_highlighting" class=header-anchor >REPL highlighting</a></h3>
+<p>Highlight.js also support highlighting of Julia REPL code using <code>julia-repl</code> as the language tag. This language definition is very simple – it <a href="https://github.com/highlightjs/highlight.js/blob/21b146644e15ba2b101341da0d3e4dc61db53056/src/languages/julia-repl.js#L29-L38">literally</a> just detects the <code>julia&gt;</code> prompt, strips the proper amount of leading whitespace, and processes the result using the regular <code>julia</code> language implementation. This means that improved REPL highlighting is obtained &quot;for free&quot;:</p>
+<pre><code class=language-julia-repl >julia&gt; function sayhello&#40;who::S&#41; where S &lt;: AbstractString
+           println&#40;&quot;hello, &quot;, who&#41;
+       end
+sayhello &#40;generic function with 1 method&#41;
+
+julia&gt; sayhello&#40;&quot;world&quot;&#41;
+hello, world</code></pre>
+<h2 id=concluding_remarks ><a href="#concluding_remarks" class=header-anchor >Concluding remarks</a></h2>
+<p>In this post I have presented some changes to the julia language syntax highlighter in the highlight.js library. In my opinion they are all strict improvements, and my plan is to submit as much as possible to the upstream project. In the meantime you can either use this file: <a href="/assets/julia.highlight.js">julia.highlight.js &#40;101K&#41;</a>, or this file: <a href="/assets/julia.highlight.min.js">julia.highlight.min.js &#40;29K&#41;</a>, which contain the <code>julia</code> and <code>julia-repl</code> languages, or build from source using <a href="https://github.com/fredrikekre/highlight.js/tree/fe/julia-unleashed">this branch</a> on my fork if you need compile with more languages included.</p>
+<p>Lets rewind and look at the example from the beginning of the post once again. While it doesn&#39;t exercise all of the changes, I hope you agree with me that the new markup is an improvement&#33;</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-43  type=checkbox  checked=true">
+<label for=unique-id-43  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia >function main&#40;who::Union&#123;String,Nothing&#125; &#61; nothing&#41;
+    if who &#61;&#61;&#61; nothing
+        who &#61; &quot;world&quot;
+    end
+    print&#40;stdout, &quot;hello, &#36;&#40;who&#41;&#33;\n&quot;&#41;
+    return nothing
+end</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old >function main&#40;who::Union&#123;String,Nothing&#125; &#61; nothing&#41;
+    if who &#61;&#61;&#61; nothing
+        who &#61; &quot;world&quot;
+    end
+    print&#40;stdout, &quot;hello, &#36;&#40;who&#41;&#33;\n&quot;&#41;
+    return nothing
+end</code></pre>
+<p>
+</div>
+</div>
+
+<p>Finally, to get a feeling of how the new syntax highlighter perform and behave in &quot;real life&quot;, let&#39;s look at some Julia package code. To this end I copied verbatim the entire implementation of the <a href="https://github.com/giordano/StarWarsArrays.jl">StarWarsArrays.jl</a> package, written by <a href="https://github.com/giordano">Mosè Giordano</a>. I believe it exercise almost all of the major changes that I made:</p>
+
+<div class=toggle-code-wrap  style="position:relative">
+<input id=unique-id-44  type=checkbox  checked=true">
+<label for=unique-id-44  class=switch >
+  <span class="slider round"></span>
+</label>
+<div class=toggle-code-new >
+</p>
+<pre><code class=language-julia ># Copyright &#40;c&#41; 2019 Mosè Giordano
+# MIT License &#40;https://github.com/giordano/StarWarsArrays.jl/blob/master/LICENSE.md&#41;
+
+module StarWarsArrays
+
+export StarWarsArray, OriginalOrder, MacheteOrder
+
+# Orders
+abstract type StarWarsOrder end
+struct OriginalOrder &lt;: StarWarsOrder end
+struct MacheteOrder &lt;: StarWarsOrder end
+
+# Exception
+struct StarWarsError &lt;: Exception
+    i::Any
+    order::Any
+end
+
+function Base.showerror&#40;io::IO, err::StarWarsError&#41;
+    print&#40;io, &quot;StarWarsError: there is no episode &#36;&#40;err.i&#41;&quot; * &quot;in &#36;&#40;err.order&#41;&quot;&#41;
+end
+
+# The main struct
+struct StarWarsArray&#123;T,N,P&lt;:AbstractArray,O&lt;:StarWarsOrder&#125; &lt;: AbstractArray&#123;T,N&#125;
+    parent::P
+end
+function StarWarsArray&#40;p::P, order::Type&#123;&lt;:StarWarsOrder&#125;&#61;OriginalOrder&#41; where &#123;T,N,P&lt;:AbstractArray&#123;T,N&#125;&#125;
+    StarWarsArray&#123;T,N,P,order&#125;&#40;p&#41;
+end
+
+machete_view_index&#40;i&#41; &#61; range&#40;1, stop&#61;i&#41;
+function StarWarsArray&#40;p::P, order::Type&#123;MacheteOrder&#125;&#41; where &#123;T,N,P&lt;:AbstractArray&#123;T,N&#125;&#125;
+    StarWarsArray&#123;T,N,P,order&#125;&#40;view&#40;p, machete_view_index.&#40;size&#40;p&#41; .- 1&#41;...&#41;&#41;
+end
+
+order&#40;::StarWarsArray&#123;T,N,P,O&#125;&#41; where &#123;T,N,P,O&#125; &#61; O
+
+# Indexing
+function index&#40;i::Int, ::Int, ::Type&#123;OriginalOrder&#125;&#41;
+    if 4 &lt;&#61; i &lt;&#61; 6
+        return i - 3
+    elseif 1 &lt;&#61; i &lt;&#61; 3
+        return i &#43; 3
+    else
+        return i
+    end
+end
+function index&#40;i::Int, size::Int, order::Type&#123;MacheteOrder&#125;&#41;
+    if 4 &lt;&#61; i &lt;&#61; 5
+        return i - 3
+    elseif 2 &lt;&#61; i &lt;&#61; 3
+        return i &#43; 1
+    elseif  6 &lt;&#61; i &lt;&#61; size &#43; 1
+        return i - 1
+    elseif i &#61;&#61; 1
+        throw&#40;StarWarsError&#40;i,order&#41;&#41;
+    else
+        return i
+    end
+end
+
+# Get the parent
+Base.parent&#40;A::StarWarsArray&#41; &#61; A.parent
+
+# Get the size
+Base.size&#40;A::StarWarsArray&#123;T,N,P,O&#125;&#41; where &#123;T,N,P,O&#125; &#61; size&#40;parent&#40;A&#41;&#41;
+
+# Get the elements
+Base.getindex&#40;A::StarWarsArray, i::Int&#41; &#61;
+    getindex&#40;parent&#40;A&#41;, index&#40;i, length&#40;parent&#40;A&#41;&#41;, order&#40;A&#41;&#41;&#41;
+Base.getindex&#40;A::StarWarsArray&#123;T,N&#125;, i::Vararg&#123;Int,N&#125;&#41; where &#123;T,N&#125; &#61;
+    getindex&#40;parent&#40;A&#41;, index.&#40;i, size&#40;parent&#40;A&#41;&#41;, order&#40;A&#41;&#41;...&#41;
+Base.setindex&#33;&#40;A::StarWarsArray, v, i::Int&#41; &#61;
+    setindex&#33;&#40;parent&#40;A&#41;, v, index&#40;i, length&#40;parent&#40;A&#41;&#41;, order&#40;A&#41;&#41;&#41;
+Base.setindex&#33;&#40;A::StarWarsArray&#123;T,N&#125;, v, i::Vararg&#123;Int,N&#125;&#41; where &#123;T,N&#125; &#61;
+    setindex&#33;&#40;parent&#40;A&#41;, v, index.&#40;i, size&#40;parent&#40;A&#41;&#41;, order&#40;A&#41;&#41;...&#41;
+
+# Showing.  Note: this is awful, but it does what I want
+Base.show&#40;io::IO, m::MIME&quot;text/plain&quot;, A::StarWarsArray&#123;T,N,P,MacheteOrder&#125;&#41; where &#123;T,N,P&#125; &#61;
+    show&#40;io, m,
+         view&#40;parent&#40;A&#41;,
+              map&#40;i-&gt;StarWarsArrays.index.&#40;i .&#43; 1, length&#40;A&#41;, MacheteOrder&#41;,
+                  StarWarsArrays.machete_view_index.&#40;size&#40;A&#41;&#41;&#41;...&#41;&#41;
+
+end # module</code></pre>
+
+</div>
+<div class=toggle-code-old >
+
+<pre><code class=language-julia-old ># Copyright &#40;c&#41; 2019 Mosè Giordano
+# MIT License &#40;https://github.com/giordano/StarWarsArrays.jl/blob/master/LICENSE.md&#41;
+
+module StarWarsArrays
+
+export StarWarsArray, OriginalOrder, MacheteOrder
+
+# Orders
+abstract type StarWarsOrder end
+struct OriginalOrder &lt;: StarWarsOrder end
+struct MacheteOrder &lt;: StarWarsOrder end
+
+# Exception
+struct StarWarsError &lt;: Exception
+    i::Any
+    order::Any
+end
+
+function Base.showerror&#40;io::IO, err::StarWarsError&#41;
+    print&#40;io, &quot;StarWarsError: there is no episode &#36;&#40;err.i&#41;&quot; * &quot;in &#36;&#40;err.order&#41;&quot;&#41;
+end
+
+# The main struct
+struct StarWarsArray&#123;T,N,P&lt;:AbstractArray,O&lt;:StarWarsOrder&#125; &lt;: AbstractArray&#123;T,N&#125;
+    parent::P
+end
+function StarWarsArray&#40;p::P, order::Type&#123;&lt;:StarWarsOrder&#125;&#61;OriginalOrder&#41; where &#123;T,N,P&lt;:AbstractArray&#123;T,N&#125;&#125;
+    StarWarsArray&#123;T,N,P,order&#125;&#40;p&#41;
+end
+
+machete_view_index&#40;i&#41; &#61; range&#40;1, stop&#61;i&#41;
+function StarWarsArray&#40;p::P, order::Type&#123;MacheteOrder&#125;&#41; where &#123;T,N,P&lt;:AbstractArray&#123;T,N&#125;&#125;
+    StarWarsArray&#123;T,N,P,order&#125;&#40;view&#40;p, machete_view_index.&#40;size&#40;p&#41; .- 1&#41;...&#41;&#41;
+end
+
+order&#40;::StarWarsArray&#123;T,N,P,O&#125;&#41; where &#123;T,N,P,O&#125; &#61; O
+
+# Indexing
+function index&#40;i::Int, ::Int, ::Type&#123;OriginalOrder&#125;&#41;
+    if 4 &lt;&#61; i &lt;&#61; 6
+        return i - 3
+    elseif 1 &lt;&#61; i &lt;&#61; 3
+        return i &#43; 3
+    else
+        return i
+    end
+end
+function index&#40;i::Int, size::Int, order::Type&#123;MacheteOrder&#125;&#41;
+    if 4 &lt;&#61; i &lt;&#61; 5
+        return i - 3
+    elseif 2 &lt;&#61; i &lt;&#61; 3
+        return i &#43; 1
+    elseif  6 &lt;&#61; i &lt;&#61; size &#43; 1
+        return i - 1
+    elseif i &#61;&#61; 1
+        throw&#40;StarWarsError&#40;i,order&#41;&#41;
+    else
+        return i
+    end
+end
+
+# Get the parent
+Base.parent&#40;A::StarWarsArray&#41; &#61; A.parent
+
+# Get the size
+Base.size&#40;A::StarWarsArray&#123;T,N,P,O&#125;&#41; where &#123;T,N,P,O&#125; &#61; size&#40;parent&#40;A&#41;&#41;
+
+# Get the elements
+Base.getindex&#40;A::StarWarsArray, i::Int&#41; &#61;
+    getindex&#40;parent&#40;A&#41;, index&#40;i, length&#40;parent&#40;A&#41;&#41;, order&#40;A&#41;&#41;&#41;
+Base.getindex&#40;A::StarWarsArray&#123;T,N&#125;, i::Vararg&#123;Int,N&#125;&#41; where &#123;T,N&#125; &#61;
+    getindex&#40;parent&#40;A&#41;, index.&#40;i, size&#40;parent&#40;A&#41;&#41;, order&#40;A&#41;&#41;...&#41;
+Base.setindex&#33;&#40;A::StarWarsArray, v, i::Int&#41; &#61;
+    setindex&#33;&#40;parent&#40;A&#41;, v, index&#40;i, length&#40;parent&#40;A&#41;&#41;, order&#40;A&#41;&#41;&#41;
+Base.setindex&#33;&#40;A::StarWarsArray&#123;T,N&#125;, v, i::Vararg&#123;Int,N&#125;&#41; where &#123;T,N&#125; &#61;
+    setindex&#33;&#40;parent&#40;A&#41;, v, index.&#40;i, size&#40;parent&#40;A&#41;&#41;, order&#40;A&#41;&#41;...&#41;
+
+# Showing.  Note: this is awful, but it does what I want
+Base.show&#40;io::IO, m::MIME&quot;text/plain&quot;, A::StarWarsArray&#123;T,N,P,MacheteOrder&#125;&#41; where &#123;T,N,P&#125; &#61;
+    show&#40;io, m,
+         view&#40;parent&#40;A&#41;,
+              map&#40;i-&gt;StarWarsArrays.index.&#40;i .&#43; 1, length&#40;A&#41;, MacheteOrder&#41;,
+                  StarWarsArrays.machete_view_index.&#40;size&#40;A&#41;&#41;&#41;...&#41;&#41;
+
+end # module</code></pre>
+<p>
+</div>
+</div>
+
+
+<style>
+.toggle-code-wrap input ~ .toggle-code-new {
+     display: none;
+}
+.toggle-code-wrap input:checked ~ .toggle-code-new {
+    display: block;
+}
+.toggle-code-wrap input ~ .toggle-code-old {
+     display: block;
+}
+.toggle-code-wrap input:checked ~ .toggle-code-old {
+    display: none;
+}
+
+.toggle-code-wrap input, .toggle-code-wrap label {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: inline-block;
+  width: 30px;
+  height: 17px;
+}
+.toggle-code-wrap input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-code-wrap .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .2s;
+  transition: .2s;
+}
+.toggle-code-wrap .slider:before {
+  position: absolute;
+  content: "";
+  height: 13px;
+  width: 13px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: .2s;
+  transition: .2s;
+}
+
+.toggle-code-wrap input:checked ~ label.switch .slider {
+  background-color: #2196F3;
+  background-color: #458;
+}
+
+.toggle-code-wrap input:checked ~ label.switch .slider:before {
+  -webkit-transform: translateX(13px);
+  -ms-transform: translateX(13px);
+  transform: translateX(13px);
+}
+
+/* Rounded sliders */
+.toggle-code-wrap .slider.round {
+  border-radius: 8px;
+}
+.toggle-code-wrap .slider.round:before {
+  border-radius: 50%;
+}
+</style>
+
+
+</div>
+
+    </div>
+    </article>
+    <hr>
+
+<!--
+    <div class=post-info >
+    <p>
+    {{ svg tag }} {{ jlinsert pagetags }}
+    </p>
+
+
+    </div>
+-->
+    </main>
+
+
+
+    </div> 
+
+    <footer class=footer >
+    <div class=footer__inner >
+        <div class=footer__content >
+            <span>&copy 2023 <a rel=author  href="/">mrtn</a></span>
+            <span><a rel=license  href="/about/#license">License</a></span>
+            <span><a href="/about/#privacy_policy">Privacy Policy</a></span>
+        </div>
+    </div>
+    <div class=footer__inner >
+        <div class=footer__content >
+            <span>Website built with <a href="https://franklinjl.org/">Franklin.jl</a></span>
+        </div>
+    </div>
+</footer>
+
+
+    
+     <script src="/libs/highlight/highlight.min.js"></script>
+
+ 
+
+    <script src="/libs/hello-hermit.js"></script>
+
+    </div>

@@ -448,7 +448,7 @@ a.button.wide {
  padding:20px
 }
 .dark-theme .header {
- background:#252627;
+ background:#210124ff;
 }
 .header__right {
  display:flex;
@@ -534,7 +534,7 @@ a.button.wide {
  z-index:9999
 }
 .dark-theme .menu {
- background:#252627
+ background:#210124ff
 }
 @media(max-width:684px) {
  .menu {
@@ -627,11 +627,11 @@ body {
 }
 body.dark-theme {
  /* Original theme colors */
- background-color:#292a2d;
+ background-color:#210124ff;
  /* color:#a9a9b3; */
  /* Adopted colors from Firefox reader view */
  /* background-color:#333; */
- color:#eee;
+ color:#d75515ff;
 }
 h2,
 h3,

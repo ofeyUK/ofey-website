@@ -1,6 +1,6 @@
 +++
 date = "2023-03-25"
-title = "My Experience of Franklin"
+title = "My Experience of Franklin with a really long title"
 var"layout-post" = nothing
 tags = ["julia", "franklin"]
 rss = ""

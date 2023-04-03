@@ -1,1 +1,55 @@
-<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=canonical  href="https://ofey.uk/posts/Getting started with Franklin/"/> <meta name=author  content=mrtn > <meta name=description  content=""> <meta name=theme-color  content="#ffffff" /> <link rel=stylesheet  href="/css/hello-hermit.css"> <title>My Experience of Franklin with a really long title | ofey</title> <body class=""> <div class=container > <header class=header > <span class=header__inner > <a href="/" style="text-decoration: none;"> <div class=logo > <span class=logo__mark > $ </span> <span class=logo__text > cd /home/ofey </span> <span class=logo__cursor  style=" "></span> </div> </a> <span class=header__right > <nav class=menu > <ul class=menu__inner > <li><a href="/about/">about</a> </ul> </nav> <span class="menu-trigger hidden"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <path d="M0 0h24v24H0z" fill=none ></path> <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path> </svg> </span> <span class="theme-toggle unselectable"> <svg class=theme-toggler  width=24  height=24  viewBox="0 0 48 48" fill=none  xmlns="http://www.w3.org/2000/svg"> <path d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22 3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"></path> </svg> </span> </span> </span> </header> <div class=content > <main class=post > <div class=post-info > <p style="display: flex; justify-content: space-between"> <span> <svg xmlns="http://www.w3.org/2000/svg" width=24  height=24  viewBox="0 0 24 24" fill=none  stroke=currentColor  stroke-width=2  stroke-linecap=round  stroke-linejoin=round ><circle cx=12  cy=12  r=10 ></circle><polyline points="12 6 12 12 16 14"></polyline></svg> 1 minute </span> <span> <svg xmlns="http://www.w3.org/2000/svg" width=24  height=24  viewBox="0 0 24 24" fill=none  stroke=currentColor  stroke-width=2  stroke-linecap=round  stroke-linejoin=round ><rect x=3  y=4  width=18  height=18  rx=2  ry=2 ></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> 2023-03-25 </span> </p> <p> <svg xmlns="http://www.w3.org/2000/svg" width=24  height=24  viewBox="0 0 24 24" fill=none  stroke=currentColor  stroke-width=2  stroke-linecap=round  stroke-linejoin=round ><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg> <span class=tag ><a href="/tag/julia">julia</a></span><span class=tag ><a href="/tag/franklin">franklin</a></span> </p> </div> <article> <div class=post-content > <div class=franklin-content > <h1><a href="/posts/Getting started with Franklin/">My Experience of Franklin with a really long title</a></h1> <h2 id=this_is_where_i_write_the_interesting_post ><a href="#this_is_where_i_write_the_interesting_post" class=header-anchor >This is where I write the interesting post</a></h2> <p>In Mark down</p> </div> </div> </article> <hr> <!-- <div class=post-info > <p> {{ svg tag }} {{ jlinsert pagetags }} </p> </div> --> </main> </div> <footer class=footer > <div class=footer__inner > <div class=footer__content > <span>&copy 2023 <a rel=author  href="/">mrtn</a></span> <span><a rel=license  href="/about/#license">License</a></span> <span><a href="/about/#privacy_policy">Privacy Policy</a></span> </div> </div> <div class=footer__inner > <div class=footer__content > <span>Website built with <a href="https://franklinjl.org/">Franklin.jl</a></span> </div> </div> </footer> <script src="/libs/hello-hermit.js"></script> </div>
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=canonical  href="https://ofey.uk/posts/Getting started with Franklin/"/> <meta name=author  content=mrtn > <meta name=description  content="My initial experiences of using Franklin, particularly setting up custom domains when hosting a Franklin based site on Github pages"> <link rel=stylesheet  href="/css/gruvbox-dark.css"> <link rel=stylesheet  href="/css/clipboard.css"> <meta name=theme-color  content="#ffffff" /> <link rel=stylesheet  href="/css/hello-hermit.css"> <title>Adding a Custom Domain to a Franklin Site Hosted on Github | ofey</title> <body class=""> <div class=container > <header class=header > <span class=header__inner > <a href="/" style="text-decoration: none;"> <div class=logo > <span class=logo__mark > $ </span> <span class=logo__text > cd /home/ofey </span> <span class=logo__cursor  style=" "></span> </div> </a> <span class=header__right > <nav class=menu > <ul class=menu__inner > <li><a href="/about/">about</a> </ul> </nav> <span class="menu-trigger hidden"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <path d="M0 0h24v24H0z" fill=none ></path> <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path> </svg> </span> <span class="theme-toggle unselectable"> <svg class=theme-toggler  width=24  height=24  viewBox="0 0 48 48" fill=none  xmlns="http://www.w3.org/2000/svg"> <path d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22 3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"></path> </svg> </span> </span> </span> </header> <div class=content > <main class=post > <div class=post-info > <p style="display: flex; justify-content: space-between"> <span> <svg xmlns="http://www.w3.org/2000/svg" width=24  height=24  viewBox="0 0 24 24" fill=none  stroke=currentColor  stroke-width=2  stroke-linecap=round  stroke-linejoin=round ><circle cx=12  cy=12  r=10 ></circle><polyline points="12 6 12 12 16 14"></polyline></svg> 2 minutes </span> <span> <svg xmlns="http://www.w3.org/2000/svg" width=24  height=24  viewBox="0 0 24 24" fill=none  stroke=currentColor  stroke-width=2  stroke-linecap=round  stroke-linejoin=round ><rect x=3  y=4  width=18  height=18  rx=2  ry=2 ></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> 2023-03-25 </span> </p> <p> <svg xmlns="http://www.w3.org/2000/svg" width=24  height=24  viewBox="0 0 24 24" fill=none  stroke=currentColor  stroke-width=2  stroke-linecap=round  stroke-linejoin=round ><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg> <span class=tag ><a href="/tag/julia">julia</a></span><span class=tag ><a href="/tag/franklin">franklin</a></span> </p> </div> <article> <div class=post-content > <div class=franklin-content > <h1><a href="/posts/Getting started with Franklin/">Adding a Custom Domain to a Franklin Site Hosted on Github</a></h1> <h2 id=introduction_to_my_franklin_experience ><a href="#introduction_to_my_franklin_experience" class=header-anchor >Introduction to my Franklin Experience</a></h2> <p><a href="https://franklinjl.org/">Franklin</a> is a static site generator for Julia. It can be used to create simple websites that can then be hosted via Github pages or similar.</p> <p>I am the very beginning of a journey to learn Julia, and wanted somewhere to record that journey. So starting a simple blog, using the language I wanted to learn seemed like a good place to start.</p> <p>Ths documentation on the Franklin website is very straightforward and give you a good starting point. This, combined with searching the <a href="https://discourse.julialang.org/">Julia Discourse</a> and finding a suitable theme on github made the whole process pretty simple.</p> <p>Coincidentally at the same time I needed to create a simple website for my local cricket team. So another opportunity to use Franklin before I&#39;d even publishd this site.</p> <p>Again, it was easy to set up. With some easy HTML and CSS tweaking I had the <a href="https://buckfastleighcc.uk/">Buckfastleigh Cricket Club</a> website up in a couple of evenings.</p> <p>However, one area where I found the Franklin documentation lacking was setting a custom domain for the website. A bit of online searching and piecing things together and I got there. </p> <p>I thought it might be helpful to record the steps I took to get there, and that it might the source of a good initial post for this site.</p> <h2 id=setting_a_custom_domain_for_a_franklin_website_on_github_pages ><a href="#setting_a_custom_domain_for_a_franklin_website_on_github_pages" class=header-anchor >Setting a Custom Domain for a Franklin Website on Github Pages</a></h2> <p>These are steps that workes for me; I can&#39;t promise they will work for you.</p> <ol> <li><p>Purchase your desired domain name.</p> <li><p>Add the domain name to the <code>config.md</code> file:</p> </ol> <pre><code class="julia hljs">website_url = <span class=hljs-string >&quot;https://yourdomain.com&quot;</span></code></pre>
+<ol start=3 >
+<li><p>If your code is hosted as a project, which this site is, then also add the following to the <code>config.md</code> file:</p>
+
+</ol>
+<pre><code class="julia hljs"><span class=hljs-meta >@def</span> prepath =</code></pre>
+<p></p>
+</div>
+
+    </div>
+    </article>
+    <hr>
+
+<!--
+    <div class=post-info >
+    <p>
+    {{ svg tag }} {{ jlinsert pagetags }}
+    </p>
+
+
+    </div>
+-->
+    </main>
+
+
+
+    </div> 
+
+    <footer class=footer >
+    <div class=footer__inner >
+        <div class=footer__content >
+            <span>&copy 2023 <a rel=author  href="/">mrtn</a></span>
+            <span><a rel=license  href="/about/#license">License</a></span>
+            <span><a href="/about/#privacy_policy">Privacy Policy</a></span>
+        </div>
+    </div>
+    <div class=footer__inner >
+        <div class=footer__content >
+            <span>Website built with <a href="https://franklinjl.org/">Franklin.jl</a></span>
+        </div>
+    </div>
+</footer>
+
+
+    
+     <script src="/libs/highlight/highlight.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha512-hDWGyh+Iy4Mr9AHOzUP2+Y0iVPn/BwxxaoSleEjH/i1o4EVTF/sh0/A1Syii8PWOae+uPr+T/KHwynoebSuAhw==" crossorigin=anonymous ></script>
+<script src="/libs/clipboard.js"></script>
+
+ 
+
+    <script src="/libs/hello-hermit.js"></script>
+
+    </div>

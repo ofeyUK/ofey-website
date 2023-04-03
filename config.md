@@ -1,7 +1,7 @@
 <!-- RSS settings -->
 
 @def website_title = "ofey"
-@def website_description = ""
+@def website_description = "ofey - open/data/julia"
 @def website_url = "https://ofey.uk"
 @def generate_rss = true
 

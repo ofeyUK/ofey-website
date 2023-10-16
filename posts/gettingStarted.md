@@ -20,7 +20,7 @@ rss_pubdate = Date(date)
 
 I am the very beginning of a journey to learn Julia, and wanted somewhere to record that journey. So starting a simple blog, using the language I wanted to learn seemed like a good place to start.
 
-Ths documentation on the Franklin website is very straightforward and give you a good starting point. This, combined with searching the [Julia Discourse][j-discourse] and finding a suitable theme on github made the whole process pretty simple.
+Ths documentation on the Franklin website is very straightforward and gives you a good starting point. This, combined with searching the [Julia Discourse][j-discourse] and finding a suitable theme on github made the whole process pretty simple.
 
 Coincidentally at the same time I needed to create a simple website for my local cricket team. So another opportunity to use Franklin before I'd even publishd this site.
 
@@ -28,9 +28,9 @@ Again, it was easy to set up. With some easy HTML and CSS tweaking I had the [Bu
 
 However, one area where I found the Franklin documentation lacking was setting a custom domain for the website. A bit of online searching and piecing things together and I got there. 
 
-I thought it might be helpful to record the steps I took to get there, and that it might the source of a good initial post for this site.
+I thought it might be helpful to record the steps I took, and it would be a good initial post for this site.
 
-## Setting a Custom Domain for a Franklin Website on Github Pages
+## Setting a Custom Domain for a Franklin Website using Github Pages
 
 These are steps that workes for me; I can't promise they will work for you.
 

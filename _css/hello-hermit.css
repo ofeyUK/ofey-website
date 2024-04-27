@@ -442,7 +442,7 @@ a.button.wide {
  color:inherit
 }
 .header {
- background:#210124ff;
+ background:rgb(255, 255, 255);
  display:flex;
  align-items:center;
  justify-content:center;
@@ -450,7 +450,7 @@ a.button.wide {
  padding:20px
 }
 .dark-theme .header {
- background:#210124ff;
+ background:rgb(32, 32, 32);
 }
 .header__right {
  display:flex;
@@ -508,11 +508,21 @@ a.button.wide {
  width:10px;
  /*height:1rem;*/
  height:1.125rem;
- background:#d75515ff;
+ background:rgb(32, 32, 32);
  /*margin-left:5px;*/
  border-radius:1px;
  animation:cursor 1.5s infinite;
 }
+.dark-theme .logo__cursor {
+  display:inline-block;
+  width:10px;
+  /*height:1rem;*/
+  height:1.125rem;
+  background:rgb(255, 255, 255);
+  /*margin-left:5px;*/
+  border-radius:1px;
+  animation:cursor 1.5s infinite;
+ }
 @media(prefers-reduced-motion:reduce) {
  .logo__cursor {
   animation:none
@@ -530,13 +540,13 @@ a.button.wide {
  }
 }
 .menu {
- background:#210124ff;
+ background:rgb(255, 255, 255);
  border-right:1px solid;
  margin-right:18px;
  z-index:9999
 }
 .dark-theme .menu {
- background:#210124ff
+ background:rgb(32, 32, 32)
 }
 @media(max-width:684px) {
  .menu {
@@ -612,7 +622,7 @@ body {
  font-size:1rem;
  line-height:1.54;
  background-color:#fff;
- color:#d75515ff;
+ color:rgb(32, 32, 32);
  text-rendering:optimizeLegibility;
  -webkit-font-smoothing:antialiased;
  /*font-feature-settings:"liga","tnum","case","calt","zero","ss01","locl";*/
@@ -629,11 +639,11 @@ body {
 }
 body.dark-theme {
  /* Original theme colors */
- background-color:#210124ff;
+ background-color:rgb(32, 32, 32);
  /* color:#a9a9b3; */
  /* Adopted colors from Firefox reader view */
  /* background-color:#333; */
- color:#d75515ff;
+ color:rgb(255, 255, 255);
 }
 h2,
 h3,

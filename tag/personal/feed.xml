@@ -39,23 +39,4 @@
   </atom:author>
         
 </item>
-
-<item>
-  <title>
-    <![CDATA[  Adding a Custom Domain to a Franklin Site Hosted on Github  ]]>
-  </title>
-  <link> https://ofey.uk/posts/gettingStarted/index.html </link>
-  <guid> https://ofey.uk/posts/gettingStarted/index.html </guid>
-  <description>
-    <![CDATA[  My initial experiences of using Franklin, particularly setting up custom domains when hosting a Franklin based site on Github pages  ]]>
-  </description>  
-    
-  <pubDate>Sat, 25 Mar 2023 00:00:00 +0000</pubDate>  
-  
-  
-  <atom:author>
-    <atom:name>Martin Parkes</atom:name>
-  </atom:author>
-        
-</item>
 </channel></rss>

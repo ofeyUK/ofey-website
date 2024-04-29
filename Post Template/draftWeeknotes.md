@@ -2,7 +2,7 @@
 date = ""
 title = "DATE - Weeknotes"
 var"layout-post" = nothing
-tags = ["weeknotes", ""]
+tags = ["weeknotes", "personal"]
 rss = ""
 
 # Dependent variables

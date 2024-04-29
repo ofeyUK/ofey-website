@@ -1,0 +1,31 @@
++++
+date = "2024-05-03"
+title = "Weeknotes 001"
+var"layout-post" = nothing
+tags = ["weeknotes", "personal"]
+rss = ""
+
+# Dependent variables
+website_description = replace(rss, "*" => "")
+rss_pubdate = Date(date)
++++
+
+~~~
+<h1><a href="{{ get_url }}">{{ markdown2html title }}</a></h1>
+~~~
+
+(It seems a little opptimistic starting my weeknotes number at 001, implying one day there might be 100 of them!)
+## What I've been learning
+
+
+## What I've been reading
+
+
+## What I've been listening to
+
+
+## Weeknotes Bonus
+
+
+
+[link-name]: https://link

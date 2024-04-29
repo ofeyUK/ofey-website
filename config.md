@@ -42,6 +42,7 @@ ignore = [setdiff([isfile(x) ? x : x * "/" for x in readdir()], _include); _excl
         (name = "about", url = "/about/"),
     ]
 
+@def prepath = "ofey-website"
 
 \newcommand{\codetoggle}[1]{
 ~~~

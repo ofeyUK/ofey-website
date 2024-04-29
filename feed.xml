@@ -11,12 +11,12 @@
     <title>
       <![CDATA[  ofey  ]]>
     </title>
-    <link> https://ofey.uk </link>
+    <link>  </link>
     <description>
       <![CDATA[  ofey - open/data/julia  ]]>
     </description>
     <atom:link
-      href="https://ofey.uk/feed.xml"
+      href="feed.xml"
       rel="self"
       type="application/rss+xml" />
 
@@ -25,8 +25,8 @@
   <title>
     <![CDATA[  It&#39;s never too late...?  ]]>
   </title>
-  <link> https://ofey.uk/posts/tooOld/index.html </link>
-  <guid> https://ofey.uk/posts/tooOld/index.html </guid>
+  <link> posts/tooOld/index.html </link>
+  <guid> posts/tooOld/index.html </guid>
   <description>
     <![CDATA[  Is mid-40s too late for data science?  ]]>
   </description>  

@@ -1,6 +1,6 @@
 +++
-date = ""
-title = "DATE - Weeknotes"
+date = "2024-05-11"
+title = "Weeknotes 002"
 var"layout-post" = nothing
 tags = ["weeknotes", "personal"]
 rss = ""

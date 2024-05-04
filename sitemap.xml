@@ -8,6 +8,12 @@
     <priority>0.5</priority>
 </url>
 <url>
+    <loc>posts/weeknotes001/index.html</loc>
+    <lastmod>2024-05-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
     <loc>posts/tooOld/index.html</loc>
     <lastmod>2024-05-04</lastmod>
     <changefreq>monthly</changefreq>

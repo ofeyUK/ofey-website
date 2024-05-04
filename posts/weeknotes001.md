@@ -1,5 +1,5 @@
 +++
-date = "2024-05-03"
+date = "2024-05-04"
 title = "Weeknotes 001"
 var"layout-post" = nothing
 tags = ["weeknotes", "personal"]

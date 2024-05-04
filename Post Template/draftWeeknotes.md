@@ -17,6 +17,9 @@ rss_pubdate = Date(date)
 ## What I've been learning
 
 
+## What I've been watching
+
+
 ## What I've been reading
 
 
@@ -25,6 +28,8 @@ rss_pubdate = Date(date)
 
 ## Weeknotes Bonus
 
+
+## Courses Completed
 
 
 [link-name]: https://link

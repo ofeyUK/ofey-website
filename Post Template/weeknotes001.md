@@ -28,4 +28,7 @@ rss_pubdate = Date(date)
 
 
 
-[link-name]: https://link
+[fCC]: https://www.freecodecamp.org/
+[MSLearn]: https://learn.microsoft.com/en-gb/
+[TT]: https://music.apple.com/gb/album/this-town-music-from-the-original-bbc-series/1736497159
+[Set]: https://en.wikipedia.org/wiki/Set_theory

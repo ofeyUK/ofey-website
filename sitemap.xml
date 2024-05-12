@@ -3,25 +3,31 @@
 
 <url>
     <loc>about/index.html</loc>
-    <lastmod>2024-05-04</lastmod>
+    <lastmod>2024-05-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>posts/weeknotes002/index.html</loc>
+    <lastmod>2024-05-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
 <url>
     <loc>posts/weeknotes001/index.html</loc>
-    <lastmod>2024-05-04</lastmod>
+    <lastmod>2024-05-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
 <url>
     <loc>posts/tooOld/index.html</loc>
-    <lastmod>2024-05-04</lastmod>
+    <lastmod>2024-05-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
 <url>
     <loc>index/</loc>
-    <lastmod>2024-05-04</lastmod>
+    <lastmod>2024-05-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
